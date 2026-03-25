@@ -49,16 +49,17 @@ investment-memory/
 
 ### 环境准备
 
-复制以下内容给到你的智能体
+把以下内容发给你的智能体。
 
-```bash
-# python环境配置
-检查当前是否存在python环境。如果有，那么请记住相关py代码通过该环境执行；如果没有，请先安装 [uv](https://docs.astral.sh/uv) ，PS：uv是一个高效的python环境管理工具。
+```
+1. python环境配置
+检查当前是否存在python环境。如果有，那么请记住相关py代码通过该环境执行；如果没有，请先安装 https://docs.astral.sh/uv
+Ps: uv是一个高效的python环境管理工具。
 
-# 下载skills并安装
-下载 [文件](https://github.com/HarryReporter/investment-memory/skills) ，并安装在你对应的skills目录下。
+2. 下载skills并安装
+下载 https://github.com/HarryReporter/investment-memory/skills ，并安装在你对应的skills目录下。
 
-# 复制示例数据到工作目录，项目记录的危机事件从2000-2026年。
+3. 复制示例数据到工作目录，项目记录的危机事件从2000-2026年。
 cp -r skills/memory/assets/memory .memory
 ```
 
@@ -109,18 +110,6 @@ cp -r skills/memory/assets/memory .memory
 
 - **memory**: 记忆管理skill，记录和查询投资分析操作历史
 - **crisis-knowledge-maintainer**: 危机知识维护skill，更新和维护危机事件知识库
-
-## 贡献指南
-
-欢迎贡献代码和提出建议！
-
-### 如何贡献
-
-1. Fork 本仓库
-2. 创建你的特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交你的更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 创建一个 Pull Request
 
 ### 问题反馈
 
