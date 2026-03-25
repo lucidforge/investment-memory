@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-根据当前形势查询相关的危机知识和教训
+根据当前形势查询相关的危机知识、教训和产业趋势
 """
 
 import argparse
@@ -13,6 +13,8 @@ from config import (
     CRISIS_EVENTS_DIR,
     LESSONS_DIR,
     PATTERNS_FILE,
+    TRENDS_INDEX_FILE,
+    TRENDS_DIR,
     load_json_file,
 )
 
@@ -194,6 +196,99 @@ def search_relevant_patterns(situation, limit):
     return scored_patterns[:limit]
 
 
+def load_trend_detail(trend_id):
+    """加载产业趋势详情"""
+    file_path = os.path.join(TRENDS_DIR, f"{trend_id}.json")
+    return load_json_file(file_path, default=None)
+
+
+def calculate_trend_relevance(trend, situation):
+    """计算产业趋势与当前形势的相关性分数"""
+    score = 0.0
+    situation_lower = situation.lower()
+
+    # 关键词匹配
+    keywords = trend.get("keywords", [])
+    for keyword in keywords:
+        if keyword.lower() in situation_lower:
+            score += 0.3
+
+    # 趋势名称匹配
+    trend_name = trend.get("trend_name", "").lower()
+    if any(word in situation_lower for word in trend_name.split()):
+        score += 0.2
+
+    # 摘要匹配
+    summary = trend.get("summary", "").lower()
+    if any(word in summary for word in situation_lower.split()):
+        score += 0.1
+
+    # 触发事件匹配
+    trigger = trend.get("trigger_event", "").lower()
+    if any(word in trigger for word in situation_lower.split()):
+        score += 0.1
+
+    return min(score, 1.0)
+
+
+def get_phase_risk_level(phase):
+    """获取阶段风险等级"""
+    risk_levels = {
+        "emerging": "极高",
+        "growth": "中高",
+        "mature": "中等",
+        "decline": "高",
+    }
+    return risk_levels.get(phase, "未知")
+
+
+def get_phase_investment_strategy(phase):
+    """获取阶段投资策略"""
+    strategies = {
+        "emerging": "小仓位试探，关注技术突破",
+        "growth": "重仓龙头，长期持有",
+        "mature": "关注龙头，估值合理时介入",
+        "decline": "回避或做空",
+    }
+    return strategies.get(phase, "未知")
+
+
+def search_relevant_trends(situation, limit):
+    """搜索相关的产业趋势"""
+    index = load_json_file(TRENDS_INDEX_FILE, default=None)
+    if not index:
+        return []
+
+    trends = index.get("trends", [])
+    scored_trends = []
+
+    for trend in trends:
+        score = calculate_trend_relevance(trend, situation)
+        if score > 0:
+            scored_trends.append(
+                {
+                    "trend_id": trend["trend_id"],
+                    "relevance_score": score,
+                    "trend_name": trend.get("trend_name", ""),
+                    "current_phase": trend.get("current_phase", "emerging"),
+                    "start_year": trend.get("start_year", 0),
+                    "summary": trend.get("summary", ""),
+                    "risk_level": get_phase_risk_level(
+                        trend.get("current_phase", "emerging")
+                    ),
+                    "investment_strategy": get_phase_investment_strategy(
+                        trend.get("current_phase", "emerging")
+                    ),
+                }
+            )
+
+    # 按相关性分数排序
+    scored_trends.sort(key=lambda x: x["relevance_score"], reverse=True)
+
+    # 返回指定数量的结果
+    return scored_trends[:limit]
+
+
 def load_full_content(relevant_items, item_type):
     """加载相关项目的完整内容"""
     results = []
@@ -205,6 +300,8 @@ def load_full_content(relevant_items, item_type):
             full_content = load_lesson_detail(item["lesson_id"])
         elif item_type == "pattern":
             full_content = item  # 规律已经包含完整内容
+        elif item_type == "trend":
+            full_content = load_trend_detail(item["trend_id"])
         else:
             full_content = None
 
@@ -223,7 +320,7 @@ def main():
     parser = argparse.ArgumentParser(description="查询相关知识")
     parser.add_argument(
         "--type",
-        choices=["crisis", "lessons", "patterns", "all"],
+        choices=["crisis", "lessons", "patterns", "trends", "all"],
         default="all",
         help="查询类型",
     )
@@ -240,6 +337,7 @@ def main():
         "relevant_crises": [],
         "relevant_lessons": [],
         "relevant_patterns": [],
+        "relevant_trends": [],
     }
 
     # 搜索相关的危机事件
@@ -262,6 +360,13 @@ def main():
         if relevant_patterns:
             result["relevant_patterns"] = relevant_patterns
             print(f"找到 {len(result['relevant_patterns'])} 个相关规律")
+
+    # 搜索相关的产业趋势
+    if args.type in ["trends", "all"]:
+        relevant_trends = search_relevant_trends(args.situation, args.limit)
+        if relevant_trends:
+            result["relevant_trends"] = load_full_content(relevant_trends, "trend")
+            print(f"找到 {len(result['relevant_trends'])} 个相关产业趋势")
 
     # 输出结果
     print("\n查询结果:")

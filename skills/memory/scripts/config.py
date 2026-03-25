@@ -13,6 +13,7 @@ MEMORY_DIR = ".memory"
 CRISIS_KNOWLEDGE_DIR = os.path.join(MEMORY_DIR, "crisis_knowledge")
 CRISIS_EVENTS_DIR = os.path.join(CRISIS_KNOWLEDGE_DIR, "events")
 LESSONS_DIR = os.path.join(MEMORY_DIR, "lessons_learned", "lessons")
+TRENDS_DIR = os.path.join(MEMORY_DIR, "industry_trends", "trends")
 
 OPERATIONS_FILE = os.path.join(MEMORY_DIR, "operations.json")
 CONCLUSIONS_FILE = os.path.join(MEMORY_DIR, "conclusions.json")
@@ -21,6 +22,7 @@ CRISIS_INDEX_FILE = os.path.join(CRISIS_KNOWLEDGE_DIR, "index.json")
 LESSONS_INDEX_FILE = os.path.join(LESSONS_DIR, "index.json")
 PATTERNS_FILE = os.path.join(MEMORY_DIR, "investment_patterns.json")
 LINKS_FILE = os.path.join(MEMORY_DIR, "links.json")
+TRENDS_INDEX_FILE = os.path.join(MEMORY_DIR, "industry_trends", "index.json")
 
 
 def ensure_memory_dir():
