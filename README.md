@@ -178,4 +178,4 @@ obsidian property:set file="危机事件/CRISIS_2026_USIRAN" name="status" value
 
 **最后更新：2026-03-26**：已从 Python+JSON 格式升级为 Obsidian Markdown 格式，人类可直接阅读，Agent 查询更省 tokens。
 
-- **注意事项**：本项目基本由 AI 生成，如果有优化建议或者问题需反馈，可以在issue中提交。
+**注意事项**：本项目基本由 AI 生成，如果有优化建议或者问题需反馈，可以在 issues 中提交。
